@@ -8,11 +8,7 @@ from datetime import datetime, timedelta, date
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-# Start MongoDB Server
-CONNECTION_STRING = "mongodb+srv://nascimentojosue2002:976Q8rdG4GYQ64kc@cluster0.nbpxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(CONNECTION_STRING)
-db = client['Softsvit']
-collection = db['manager-stats']
+
 
 # Get the authorization token
 def get_token():
@@ -34,6 +30,7 @@ def get_token():
     else:
         print("Failed to retrieve the token")
 
+
 # List all managers ids and their names
 def list_ids():
     bearer = get_token()
@@ -48,15 +45,12 @@ def list_ids():
         manager_id = manager["assign"].split("x")[1]
 
         mydict = {manager_name : manager_id}
-
         managers_ids.update(mydict)
-
 
     return managers_ids
 
 # Request manager stats
 def request_manager_stats(manager_id) -> list:
-    """Request the manager's stats from the API."""
     try:
         bearer = get_token()
         headers = {"authorization": f"{bearer}"}
@@ -78,7 +72,6 @@ def get_stats():
     managers = list_ids()
 
     for manager,id in managers.items():
-
         #Skip if the id belongs to a desk manager
         if (int(id) == 3406 or int(id) == 3407):
             continue
@@ -99,6 +92,7 @@ def get_stats():
             aggregated_data[date_gmt_minus_3]['all_cnt'] += entry['all_cnt'] or 0
             aggregated_data[date_gmt_minus_3]['unique_cnt'] += entry['unique_cnt'] or 0
             aggregated_data[date_gmt_minus_3]['duration'] += entry['duration'] or 0
+
 
         # Initialize stats dictionary
         total_stats_manager = {}
@@ -126,6 +120,12 @@ def get_stats():
 
 
 
+# Start MongoDB Server
+CONNECTION_STRING = "mongodb+srv://nascimentojosue2002:976Q8rdG4GYQ64kc@cluster0.nbpxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(CONNECTION_STRING)
+db = client['Softsvit']
+collection = db['manager-stats']
+
 managers_stats = get_stats()
 for name,stats in managers_stats.items():
     # Data to insert
@@ -139,7 +139,3 @@ for name,stats in managers_stats.items():
 
     # Append data to collection
     insert_result = collection.insert_one(data)
-
-
-
-print('deu bom meu filho')

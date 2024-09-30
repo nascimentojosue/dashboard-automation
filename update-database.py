@@ -7,11 +7,6 @@ from datetime import datetime, timedelta, date
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-# Start MongoDB Server
-CONNECTION_STRING = "mongodb+srv://nascimentojosue2002:976Q8rdG4GYQ64kc@cluster0.nbpxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(CONNECTION_STRING)
-db = client['Softsvit']
-collection = db['manager-stats']
 
 
 # Get the authorization token
@@ -57,10 +52,8 @@ def list_ids(date):
 
 # Request manager stats
 def request_manager_stats(manager_id,date):
-    """Request the manager's stats from the API."""
     date += timedelta(days=1)
     next_date = date.strftime('%Y-%m-%d')
-
 
     try:
         bearer = get_token()
@@ -103,7 +96,6 @@ def get_stats(date):
         # Initialize stats dictionary
         total_stats_manager = {}
         
-
         # Process each date
         for date_, totals in aggregated_data.items():
         
@@ -119,11 +111,16 @@ def get_stats(date):
     return total_stats
 
 
+# Start MongoDB Server
+CONNECTION_STRING = "mongodb+srv://nascimentojosue2002:976Q8rdG4GYQ64kc@cluster0.nbpxb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(CONNECTION_STRING)
+db = client['Softsvit']
+collection = db['manager-stats']
 
 
 today = datetime.today().strftime('%Y-%m-%d')
-
 managers_stats = get_stats(today)
+
 for name,stats in managers_stats.items():
     # Data to insert
     data = {
