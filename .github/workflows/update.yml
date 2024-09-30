@@ -1,0 +1,23 @@
+name: Run Python Script Daily
+
+on:
+  schedule:
+    # Run every day at 23:50 UTC-3
+    - cron: '50 20 * * *'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install requests pymongo pytz
+
+      - name: Run script
+        run: python update-database.py
